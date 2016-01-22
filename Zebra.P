@@ -1,0 +1,57 @@
+/*clause for first house*/
+house_is_first(X,[X,_,_,_,_]).
+
+/*clause for house in middle */
+house_in_middle(X,[_,_,X,_,_]).
+
+/*clauses for all combination of residing in houses*/
+resides(X,Y):- Y = [X,_,_,_,_];  Y = [_,X,_,_,_];  Y = [_,_,X,_,_];  Y = [_,_,_,X,_];  Y = [_,_,_,_,X].
+
+/*clauses for all houses who are beside each other*/
+
+besides(X,Y,Z):- Z = [X,Y,_,_,_] ; Z = [_,X,Y,_,_] ; Z = [_,_,X,Y,_] ; Z = [_,_,_,X,Y] ; Z = [Y,X,_,_,_] ; Z = [_,Y,X,_,_] ; Z = [_,_,Y,X,_] ; Z = [_,_,_,Y,X].
+
+/*clauses for if the house is left to other house*/
+
+leftto(X,Y,Z):- Z = [X,Y,_,_,_] ; Z = [_,X,Y,_,_] ; Z = [_,_,X,Y,_] ; Z = [_,_,_,X,Y].
+
+/*clauses for all the constraints*/
+
+solve:-
+   resides([englishman,_,_,_,red],List),
+
+   resides([spaniard,dog,_,_,_],List),
+
+   house_is_first([norwegian,_,_,_,_],List),
+
+   resides([_,_,kools,_,yellow],List),
+
+   besides([_,_,chesterfields,_,_],[_,fox,_,_,_],List),
+
+   besides([norwegian,_,_,_,_],[_,_,_,_,blue],List),
+
+   resides([_,snail,oldgold,_,_],List),
+
+   resides([_,_,luckystrike,orangejuice,_],List),
+
+   resides([ukranian,_,_,tea,_],List),
+
+   resides([japanese,_,parliaments,_,_],List),
+
+   besides([_,_,kools,_,_],[_,horse,_,_,_],List),
+
+   resides([_,_,_,coffee,green],List),
+
+   leftto([_,_,_,_,ivory],[_,_,_,_,green],List),
+
+   house_in_middle([_,_,_,milk,_],List),
+
+/* first answer in variable*/
+   resides([DrinksWater,_,_,water,_],List),
+
+/* second answer in variable*/
+   resides([OwnsZebra,zebra,_,_,_],List),
+
+/* print both answers*/
+   write(DrinksWater),write(' drinks water'),write('\n'),
+   write(OwnsZebra),write(' keeps zebra'),write('\n').

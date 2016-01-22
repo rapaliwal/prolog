@@ -1,0 +1,103 @@
+start([[3,3],bank_one,[0,0]]).
+goal([[0,0],bank_two,[3,3]]).
+
+/*addition rule*/
+increment(N,X,O):- O is N + X.
+
+/*rules for all possible state changes*/
+state_change([[CL,ML],bank_one,[CR,MR]],[[CL,ML2],bank_two,[CR,MR2]]):-
+	/* 2 missionaries travel from bank_one to bank_two*/
+	increment(MR,2,MR2),
+	increment(ML,-2,ML2),
+	valid(CL,ML2,CR,MR2).
+
+state_change([[CL,ML],bank_one,[CR,MR]],[[CL2,ML],bank_two,[CR2,MR]]):-
+	/* 2 cannibals travel from bank_one to bank_two*/
+	increment(CR,2,CR2),
+	increment(CL,-2,CL2),
+	valid(CL2,ML,CR2,MR).
+
+state_change([[CL,ML],bank_one,[CR,MR]],[[CL2,ML2],bank_two,[CR2,MR2]]):-
+	/* 1 missionary and 1 cannibal travel from bank_one to bank_two*/
+	increment(CR,1,CR2),
+	increment(CL,-1,CL2),
+	increment(MR,1,MR2),
+	increment(ML,-1,ML2),
+	valid(CL2,ML2,CR2,MR2).
+
+state_change([[CL,ML],bank_one,[CR,MR]],[[CL,ML2],bank_two,[CR,MR2]]):-
+	/* 1 missionary travels from bank_one to bank_two*/
+	increment(MR,1,MR2),
+	increment(ML,-1,ML2),
+	valid(CL,ML2,CR,MR2).
+
+state_change([[CL,ML],bank_one,[CR,MR]],[[CL2,ML],bank_two,[CR2,MR]]):-
+	/* 1 cannibal travels from bank_one to bank_two*/
+	increment(CR,1,CR2),
+	increment(CL,-1,CL2),
+	valid(CL2,ML,CR2,MR).
+
+state_change([[CL,ML],bank_two,[CR,MR]],[[CL,ML2],bank_one,[CR,MR2]]):-
+	/* 2 missionaries travel from bank_two to bank_one*/
+	increment(MR,-2,MR2),
+	increment(ML,2,ML2),
+	valid(CL,ML2,CR,MR2).
+
+state_change([[CL,ML],bank_two,[CR,MR]],[[CL2,ML],bank_one,[CR2,MR]]):-
+	/* 2 cannibals travel from bank_two to bank_one*/
+	increment(CR,-2,CR2),
+	increment(CL,2,CL2),
+	valid(CL2,ML,CR2,MR).
+
+state_change([[CL,ML],bank_two,[CR,MR]],[[CL2,ML2],bank_one,[CR2,MR2]]):-
+	/* 1 missionary and one cannibal travel from bank_two to bank_one*/
+	increment(CR,-1,CR2),
+	increment(CL,1,CL2),
+	increment(MR,-1,MR2),
+	increment(ML,1,ML2),
+	valid(CL2,ML2,CR2,MR2).
+
+state_change([[CL,ML],bank_two,[CR,MR]],[[CL,ML2],bank_one,[CR,MR2]]):-
+	/* 1 missionary travels from bank_two to bank_one*/
+	increment(MR,-1,MR2),
+	increment(ML,1,ML2),
+	valid(CL,ML2,CR,MR2).
+
+state_change([[CL,ML],bank_two,[CR,MR]],[[CL2,ML],bank_one,[CR2,MR]]):-
+	/* 1 cannibal travels from bank_two to bank_one*/
+	increment(CR,-1,CR2),
+	increment(CL,1,CL2),
+	valid(CL2,ML,CR2,MR).
+
+/*rule for checking state_changes constraint*/
+valid(CL,ML,CR,MR) :-
+	/*check safety constraints for missionaries*/
+	ML>=0, CL>=0, MR>=0, CR>=0,
+	(ML>=CL ; ML=0),
+	(MR>=CR ; MR=0).
+
+
+/*clauses and rules for checking member*/
+member(X,[X|_]).
+member(X,[_|Ys]):-
+	member(X,Ys).
+
+/*Recursive call to solve the problem*/
+sequence([[CL1,ML1],B1,[CR1,MR1]],[[CL2,ML2],B2,[CR2,MR2]],PastState,Trace) :- 
+   state_change([[CL1,ML1],B1,[CR1,MR1]],[[CL3,ML3],B3,[CR3,MR3]]), 
+   not(member([[CL3,ML3],B3,[CR3,MR3]],PastState)),
+   sequence([[CL3,ML3],B3,[CR3,MR3]],[[CL2,ML2],B2,[CR2,MR2]],[[[CL3,ML3],B3,[CR3,MR3]]|PastState],[ [[[CL3,ML3],B3,[CR3,MR3]],[[CL1,ML1],B1,[CR1,MR1]]] | Trace ]).
+
+/*Output*/
+print([]) :- nl. 
+print([[A|B]|Trace]) :- 
+	print(Trace), 
+   	write(B), write(' --travels--> '), write(A), nl.
+
+/*base case for solution*/
+sequence([[CL,ML],B,[CR,MR]],[[CL,ML],B,[CR,MR]],_,Trace):- 
+	print(Trace).
+
+/*Find sequence of steps from start state to goal state with past state set to start and empty set of states in trace*/
+solve :- 
+   sequence([[3,3],bank_one,[0,0]],[[0,0],bank_two,[3,3]],[[[3,3],bank_one,[0,0]]],_).
